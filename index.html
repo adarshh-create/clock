@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeelTime Enhanced - Ultimate Web Clock</title>
+    <link rel="stylesheet" href="clock.css">
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="container">
+        <h1 class="title">FeelTime Enhanced</h1>
+        
+        <div class="time-section">
+            <div class="time-display" id="timeDisplay">00:00:00</div>
+            <div class="world-times">
+                <div class="world-time">🗽 NYC: <span id="nyTime">--:--</span></div>
+                <div class="world-time">🏛️ London: <span id="londonTime">--:--</span></div>
+                <div class="world-time">🗼 Tokyo: <span id="tokyoTime">--:--</span></div>
+                <div class="world-time">🕌 Dubai: <span id="dubaiTime">--:--</span></div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="mood-section">
+                <span class="mood-emoji" id="moodEmoji">🕐</span>
+                <div class="mood-text" id="moodText">Loading mood...</div>
+                <div class="quote-text" id="quoteText">Loading inspiration...</div>
+            </div>
+            
+            <div class="weather-section">
+                <div class="section-title">🌤️ Weather</div>
+                <div class="weather-info">
+                    <span class="weather-icon" id="weatherIcon">🌤️</span>
+                    <div>
+                        <div class="weather-temp" id="weatherTemp">--°</div>
+                        <div class="weather-desc" id="weatherDesc">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="productivity-section">
+                <div class="section-title">🍅 Pomodoro Timer</div>
+                <div class="pomodoro-timer">
+                    <div class="timer-display" id="timerDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="timer-btn" onclick="startTimer()">Start</button>
+                        <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+                        <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+                <div class="section-title" style="margin-top: 20px;">💪 Daily Habits</div>
+                <div class="habit-tracker">
+                    <div class="habit-item" onclick="toggleHabit(this, 'water')">
+                        <div class="habit-icon">💧</div>
+                        <div class="habit-text">Water</div>
+                    </div>
+                    <div class="habit-item" onclick="toggleHabit(this, 'exercise')">
+                        <div class="habit-icon">🏃</div>
+                        <div class="habit-text">Exercise</div>
+                    </div>
+                    <div class="habit-item" onclick="toggleHabit(this, 'reading')">
+                        <div class="habit-icon">📚</div>
+                        <div class="habit-text">Reading</div>
+                    </div>
+                    <div class="habit-item" onclick="toggleHabit(this, 'meditation')">
+                        <div class="habit-icon">🧘</div>
+                        <div class="habit-text">Meditate</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="music-section">
+                <div class="section-title">🎵 Ambient Sounds</div>
+                <div class="music-player">
+                    <div class="music-controls">
+                        <button class="music-btn" onclick="playAmbient('rain')" title="Rain">🌧️</button>
+                        <button class="music-btn" onclick="playAmbient('forest')" title="Forest">🌲</button>
+                        <button class="music-btn" onclick="playAmbient('ocean')" title="Ocean">🌊</button>
+                        <button class="music-btn" onclick="stopAmbient()" title="Stop">⏹️</button>
+                    </div>
+                    <div class="visualizer" id="visualizer">
+                        <div class="bar" style="animation-delay: 0s;"></div>
+                        <div class="bar" style="animation-delay: 0.1s;"></div>
+                        <div class="bar" style="animation-delay: 0.2s;"></div>
+                        <div class="bar" style="animation-delay: 0.3s;"></div>
+                        <div class="bar" style="animation-delay: 0.4s;"></div>
+                        <div class="bar" style="animation-delay: 0.5s;"></div>
+                        <div class="bar" style="animation-delay: 0.6s;"></div>
+                        <div class="bar" style="animation-delay: 0.7s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-grid">
+            <div class="history-section">
+                <div class="section-title">📚 On This Day in History</div>
+                <div class="history-event" id="historyEvent">
+                    Discovering what happened on this day...
+                </div>
+            </div>
+            
+            <div class="calendar-section">
+                <div class="section-title">📅 Today's Focus</div>
+                <div id="todayFocus">
+                    <div style="margin-bottom: 10px;">
+                        <strong>Priority Task:</strong> <span id="priorityTask">Set your main goal for today</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Energy Level:</strong> <span id="energyLevel">High ⚡</span>
+                    </div>
+                    <div>
+                        <strong>Focus Time:</strong> <span id="focusTime">2-4 PM recommended</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="voice-control" id="voiceBtn" onclick="toggleVoice()" title="Voice Announcements">🎤</button>
+
+    <script src="clock.js"></script>
+</body>
+</html>
