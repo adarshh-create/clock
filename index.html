@@ -10,105 +10,63 @@
     <div class="floating-particles" id="particles"></div>
     
     <div class="container">
-        <h1 class="title">FeelTime Enhanced</h1>
+        <h1 class="title">FeelTime Clock</h1>
         
-        <div class="time-section">
+        <div class="glass-card time-section">
             <div class="time-display" id="timeDisplay">00:00:00</div>
-            <div class="world-times">
-                <div class="world-time">🗽 NYC: <span id="nyTime">--:--</span></div>
-                <div class="world-time">🏛️ London: <span id="londonTime">--:--</span></div>
-                <div class="world-time">🗼 Tokyo: <span id="tokyoTime">--:--</span></div>
-                <div class="world-time">🕌 Dubai: <span id="dubaiTime">--:--</span></div>
+            <div class="world-times" id="worldTimes">
             </div>
         </div>
         
         <div class="main-grid">
-            <div class="mood-section">
+            <div class="glass-card mood-section">
                 <span class="mood-emoji" id="moodEmoji">🕐</span>
                 <div class="mood-text" id="moodText">Loading mood...</div>
                 <div class="quote-text" id="quoteText">Loading inspiration...</div>
             </div>
             
-            <div class="weather-section">
+            <div class="glass-card weather-section">
                 <div class="section-title">🌤️ Weather</div>
                 <div class="weather-info">
                     <span class="weather-icon" id="weatherIcon">🌤️</span>
                     <div>
                         <div class="weather-temp" id="weatherTemp">--°</div>
                         <div class="weather-desc" id="weatherDesc">Loading...</div>
+                        <div class="weather-location" id="weatherLocation">Detecting location...</div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="productivity-section">
-                <div class="section-title">🍅 Pomodoro Timer</div>
-                <div class="pomodoro-timer">
-                    <div class="timer-display" id="timerDisplay">25:00</div>
-                    <div class="timer-controls">
-                        <button class="timer-btn" onclick="startTimer()">Start</button>
-                        <button class="timer-btn" onclick="pauseTimer()">Pause</button>
-                        <button class="timer-btn" onclick="resetTimer()">Reset</button>
-                    </div>
-                </div>
-                <div class="section-title" style="margin-top: 20px;">💪 Daily Habits</div>
-                <div class="habit-tracker">
-                    <div class="habit-item" onclick="toggleHabit(this, 'water')">
-                        <div class="habit-icon">💧</div>
-                        <div class="habit-text">Water</div>
-                    </div>
-                    <div class="habit-item" onclick="toggleHabit(this, 'exercise')">
-                        <div class="habit-icon">🏃</div>
-                        <div class="habit-text">Exercise</div>
-                    </div>
-                    <div class="habit-item" onclick="toggleHabit(this, 'reading')">
-                        <div class="habit-icon">📚</div>
-                        <div class="habit-text">Reading</div>
-                    </div>
-                    <div class="habit-item" onclick="toggleHabit(this, 'meditation')">
-                        <div class="habit-icon">🧘</div>
-                        <div class="habit-text">Meditate</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="music-section">
-                <div class="section-title">🎵 Ambient Sounds</div>
-                <div class="music-player">
-                    <div class="music-controls">
-                        <button class="music-btn" onclick="playAmbient('rain')" title="Rain">🌧️</button>
-                        <button class="music-btn" onclick="playAmbient('forest')" title="Forest">🌲</button>
-                        <button class="music-btn" onclick="playAmbient('ocean')" title="Ocean">🌊</button>
-                        <button class="music-btn" onclick="stopAmbient()" title="Stop">⏹️</button>
-                    </div>
-                    <div class="visualizer" id="visualizer">
-                        <div class="bar" style="animation-delay: 0s;"></div>
-                        <div class="bar" style="animation-delay: 0.1s;"></div>
-                        <div class="bar" style="animation-delay: 0.2s;"></div>
-                        <div class="bar" style="animation-delay: 0.3s;"></div>
-                        <div class="bar" style="animation-delay: 0.4s;"></div>
-                        <div class="bar" style="animation-delay: 0.5s;"></div>
-                        <div class="bar" style="animation-delay: 0.6s;"></div>
-                        <div class="bar" style="animation-delay: 0.7s;"></div>
-                    </div>
-                </div>
+                
             </div>
         </div>
-        
+            
         <div class="bottom-grid">
-            <div class="history-section">
+            <div class="glass-card history-section">
                 <div class="section-title">📚 On This Day in History</div>
+                <select id="countrySelect" onchange="loadHistoryForCountry()" style="margin-bottom: 15px; background: rgba(255,255,255,0.1); color: rgb(97, 70, 70); border: 1px solid rgba(93, 70, 70, 0.3); border-radius: 10px; padding: 10px; width: 100%;">
+                    <option value="">Global History</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="India">India</option>
+                    <option value="China">China</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Canada">Canada</option>
+                </select>
                 <div class="history-event" id="historyEvent">
-                    Discovering what happened on this day...
+                    <div class="loading"></div> Loading historical events...
                 </div>
             </div>
             
-            <div class="calendar-section">
+            <div class="glass-card calendar-section">
                 <div class="section-title">📅 Today's Focus</div>
                 <div id="todayFocus">
-                    <div style="margin-bottom: 10px;">
+                    <div>
                         <strong>Priority Task:</strong> <span id="priorityTask">Set your main goal for today</span>
                     </div>
-                    <div style="margin-bottom: 10px;">
+                    <div>
                         <strong>Energy Level:</strong> <span id="energyLevel">High ⚡</span>
                     </div>
                     <div>
@@ -118,8 +76,32 @@
             </div>
         </div>
     </div>
-    
-    <button class="voice-control" id="voiceBtn" onclick="toggleVoice()" title="Voice Announcements">🎤</button>
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLocationModal()">&times;</span>
+            <h2>Add New Location</h2>
+            <div class="form-group">
+                <label for="locationName">Location Name:</label>
+                <input type="text" id="locationName" placeholder="e.g., Paris, France">
+            </div>
+            <div class="form-group">
+                <label for="timezoneSelect">Timezone:</label>
+                <select id="timezoneSelect">
+                    <option value="America/New_York">New York (EST)</option>
+                    <option value="Europe/London">London (GMT)</option>
+                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    <option value="Asia/Dubai">Dubai (GST)</option>
+                    <option value="Europe/Paris">Paris (CET)</option>
+                    <option value="Asia/Shanghai">Shanghai (CST)</option>
+                    <option value="Australia/Sydney">Sydney (AEDT)</option>
+                    <option value="America/Los_Angeles">Los Angeles (PST)</option>
+                    <option value="Asia/Mumbai">Mumbai (IST)</option>
+                    <option value="Europe/Berlin">Berlin (CET)</option>
+                </select>
+            </div>
+            <button class="add-location-btn" onclick="addNewLocation()">Add Location</button>
+        </div>
+    </div>
 
     <script src="clock.js"></script>
 </body>

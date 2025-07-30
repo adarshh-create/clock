@@ -193,49 +193,177 @@ const hourlyData = {
             }
         };
 
-        // Timer variables
-        let timerInterval;
-        let timerMinutes = 25;
-        let timerSeconds = 0;
-        let isTimerRunning = false;
+        let worldLocations = [
+            { name: '🗽 NYC', timezone: 'America/New_York' },
+            { name: '🏛️ London', timezone: 'Europe/London' },
+            { name: '🗼 Tokyo', timezone: 'Asia/Tokyo' },
+            { name: '🕌 Dubai', timezone: 'Asia/Dubai' }
+        ];
 
-        // Voice control
-        let voiceEnabled = false;
+        let weatherLocations = [
+            { name: 'New York', value: 'new-york' },
+            { name: 'London', value: 'london' },
+            { name: 'Tokyo', value: 'tokyo' },
+            { name: 'Dubai', value: 'dubai' },
+            { name: 'Paris', value: 'paris' },
+            { name: 'Mumbai', value: 'mumbai' },
+        ];
 
-        // Ambient sounds
-        let currentAmbient = null;
-
-        // Initialize app
+        let currentWeatherLocation = '';
+        let userLocation = { lat: null, lon: null, city: 'Unknown' };
         function init() {
             updateTime();
             updateMood();
-            updateWeather();
+            getUserLocation();
             createParticles();
             loadHistoryEvent();
+            initializeWeatherLocations();
+            
             setInterval(updateTime, 1000);
-            setInterval(updateMood, 60000); // Update mood every minute
+            setInterval(updateMood, 60000);
         }
 
-        // Update time displays
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        userLocation.lat = position.coords.latitude;
+                        userLocation.lon = position.coords.longitude;
+                        updateWeatherByCoords(userLocation.lat, userLocation.lon);
+                    },
+                    error => {
+                        console.log('Location access denied:', error);
+                        updateWeatherByCity('london'); // Default to London
+                    }
+                );
+            } else {
+                updateWeatherByCity('london');
+            }
+        }
+
+        async function updateWeatherByCoords(lat, lon) {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=your_api_key&units=metric`);
+                if (!response.ok) {
+                    throw new Error('Weather API not available');
+                }
+                const data = await response.json();
+                updateWeatherDisplay(data);
+            } catch (error) {
+                console.log('Using mock weather data');
+                updateMockWeather();
+            }
+        }
+
+        async function updateWeatherByCity(city) {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=your_api_key&units=metric`);
+                if (!response.ok) {
+                    throw new Error('Weather API not available');
+                }
+                const data = await response.json();
+                updateWeatherDisplay(data);
+            } catch (error) {
+                console.log('Using mock weather data for', city);
+                updateMockWeatherForCity(city);
+            }
+        }
+
+        function updateWeatherDisplay(data) {
+            const weatherIcon = getWeatherEmoji(data.weather[0].main);
+            document.getElementById('weatherIcon').textContent = weatherIcon;
+            document.getElementById('weatherTemp').textContent = Math.round(data.main.temp) + '°C';
+            document.getElementById('weatherDesc').textContent = data.weather[0].description;
+            document.getElementById('weatherLocation').textContent = data.name + ', ' + data.sys.country;
+        }
+
+        function getWeatherEmoji(condition) {
+            const weatherEmojis = {
+                'Clear': '☀️',
+                'Clouds': '☁️',
+                'Rain': '🌧️',
+                'Drizzle': '🌦️',
+                'Thunderstorm': '⛈️',
+                'Snow': '❄️',
+                'Mist': '🌫️',
+                'Fog': '🌫️'
+            };
+            return weatherEmojis[condition] || '🌤️';
+        }
+
+        function updateMockWeather() {
+            const mockWeather = {
+                icon: '🌤️',
+                temp: Math.floor(Math.random() * 15) + 15,
+                desc: 'Partly cloudy',
+                location: 'Your Location'
+            };
+            
+            document.getElementById('weatherIcon').textContent = mockWeather.icon;
+            document.getElementById('weatherTemp').textContent = mockWeather.temp + '°C';
+            document.getElementById('weatherDesc').textContent = mockWeather.desc;
+            document.getElementById('weatherLocation').textContent = mockWeather.location;
+        }
+
+        function updateMockWeatherForCity(city) {
+            const cityWeather = {
+                'london': { icon: '🌦️', temp: 18, desc: 'Light rain', location: 'London, UK' },
+                'tokyo': { icon: '☀️', temp: 24, desc: 'Clear sky', location: 'Tokyo, JP' },
+                'dubai': { icon: '☀️', temp: 32, desc: 'Hot and sunny', location: 'Dubai, AE' },
+                'paris': { icon: '☁️', temp: 20, desc: 'Cloudy', location: 'Paris, FR' },
+                'mumbai': { icon: '🌧️', temp: 28, desc: 'Monsoon', location: 'Mumbai, IN' },
+                'new-york': { icon: '🌤️', temp: 22, desc: 'Partly cloudy', location: 'New York, US' }
+            };
+
+            const weather = cityWeather[city] || { icon: '🌤️', temp: 20, desc: 'Pleasant', location: 'Unknown' };
+            
+            document.getElementById('weatherIcon').textContent = weather.icon;
+            document.getElementById('weatherTemp').textContent = weather.temp + '°C';
+            document.getElementById('weatherDesc').textContent = weather.desc;
+            document.getElementById('weatherLocation').textContent = weather.location;
+        }
+
+        function initializeWeatherLocations() {
+            const select = document.getElementById('locationSelect');
+            weatherLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location.value;
+                option.textContent = location.name;
+                select.appendChild(option);
+            });
+        }
+
+        function changeWeatherLocation() {
+            const selectedLocation = document.getElementById('locationSelect').value;
+            if (selectedLocation) {
+                updateWeatherByCity(selectedLocation);
+                currentWeatherLocation = selectedLocation;
+            }
+        }
+
         function updateTime() {
             const now = new Date();
             
-            // Local time
-            const timeString = now.toLocaleTimeString();
-            document.getElementById('timeDisplay').textContent = timeString;
-            
-            // World times
-            document.getElementById('nyTime').textContent = 
-                new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"})).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('londonTime').textContent = 
-                new Date(now.toLocaleString("en-US", {timeZone: "Europe/London"})).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('tokyoTime').textContent = 
-                new Date(now.toLocaleString("en-US", {timeZone: "Asia/Tokyo"})).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('dubaiTime').textContent = 
-                new Date(now.toLocaleString("en-US", {timeZone: "Asia/Dubai"})).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('timeDisplay').textContent = now.toLocaleTimeString();
+            updateWorldTimes();
         }
 
-        // Update mood based on current hour
+        function updateWorldTimes() {
+            const container = document.getElementById('worldTimes');
+            container.innerHTML = '';
+            
+            worldLocations.forEach(location => {
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'world-time';
+                
+                const now = new Date();
+                const timeInZone = new Date(now.toLocaleString("en-US", {timeZone: location.timezone}));
+                const timeString = timeInZone.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                timeDiv.innerHTML = `${location.name}: <span>${timeString}</span>`;
+                container.appendChild(timeDiv);
+            });
+        }
         function updateMood() {
             const hour = new Date().getHours();
             const data = hourlyData[hour];
@@ -244,31 +372,17 @@ const hourlyData = {
             document.getElementById('moodText').textContent = data.text;
             document.getElementById('quoteText').textContent = data.quote;
             
-            // Update focus section
             document.getElementById('energyLevel').textContent = data.energy;
             document.getElementById('priorityTask').textContent = data.task;
             document.getElementById('focusTime').textContent = data.focus;
-            
-            // Update body theme
             document.body.className = data.theme;
-            
-            // Update particles
             createParticles(data.particle);
-            
-            // Voice announcement
-            if (voiceEnabled && 'speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(`It's ${data.text}. ${data.task}`);
-                speechSynthesis.speak(utterance);
-            }
         }
-
-        // Create floating particles
         function createParticles(type = 'snow') {
             const container = document.getElementById('particles');
             container.innerHTML = '';
             
             const particleCount = 50;
-            const particles = ['❄️', '🌸', '🍃', '✨'];
             let particleEmoji = '❄️';
             
             if (type === 'petals') particleEmoji = '🌸';
@@ -287,131 +401,53 @@ const hourlyData = {
             }
         }
 
-        // Update weather (mock data)
-        function updateWeather() {
-            const weatherConditions = [
-                { icon: '☀️', temp: '24°C', desc: 'Sunny' },
-                { icon: '⛅', temp: '22°C', desc: 'Partly Cloudy' },
-                { icon: '🌧️', temp: '18°C', desc: 'Light Rain' },
-                { icon: '🌤️', temp: '26°C', desc: 'Mostly Sunny' }
-            ];
+        async function loadHistoryEvent(country = '') {
+            const today = new Date();
+            const month = today.getMonth() + 1;
+            const day = today.getDate();
             
-            const weather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
-            
-            document.getElementById('weatherIcon').textContent = weather.icon;
-            document.getElementById('weatherTemp').textContent = weather.temp;
-            document.getElementById('weatherDesc').textContent = weather.desc;
-        }
-
-        // Pomodoro Timer Functions
-        function startTimer() {
-            if (!isTimerRunning) {
-                isTimerRunning = true;
-                timerInterval = setInterval(() => {
-                    if (timerSeconds === 0) {
-                        if (timerMinutes === 0) {
-                            // Timer finished
-                            resetTimer();
-                            alert('Pomodoro session completed! Take a break.');
-                            return;
-                        }
-                        timerMinutes--;
-                        timerSeconds = 59;
-                    } else {
-                        timerSeconds--;
-                    }
-                    updateTimerDisplay();
-                }, 1000);
+            try {
+                let url = `https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let events = data.events || [];
+                
+                if (country) {
+                    events = events.filter(event => 
+                        event.text.toLowerCase().includes(country.toLowerCase()) ||
+                        (event.pages && event.pages.some(page => 
+                            page.extract && page.extract.toLowerCase().includes(country.toLowerCase())
+                        ))
+                    );
+                }
+                
+                if (events.length > 0) {
+                    const randomEvent = events[Math.floor(Math.random() * events.length)];
+                    const eventText = `${randomEvent.year}: ${randomEvent.text}`;
+                    document.getElementById('historyEvent').innerHTML = eventText;
+                } else {
+                    loadMockHistoryEvent(country);
+                }
+            } catch (error) {
+                console.log('Wikipedia API not available, using mock data');
+                loadMockHistoryEvent(country);
             }
         }
 
-        function pauseTimer() {
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-        }
-
-        function resetTimer() {
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-            timerMinutes = 25;
-            timerSeconds = 0;
-            updateTimerDisplay();
-        }
-
-        function updateTimerDisplay() {
-            const mins = timerMinutes.toString().padStart(2, '0');
-            const secs = timerSeconds.toString().padStart(2, '0');
-            document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
-        }
-
-        // Habit Tracker
-        function toggleHabit(element, habitName) {
-            element.classList.toggle('completed');
-            
-            // Store in memory (you could extend this to localStorage if needed)
-            if (element.classList.contains('completed')) {
-                element.style.opacity = '0.6';
-                element.style.transform = 'scale(0.95)';
-            } else {
-                element.style.opacity = '1';
-                element.style.transform = 'scale(1)';
-            }
-        }
-
-        // Ambient Sounds
-        function playAmbient(type) {
-            stopAmbient();
-            currentAmbient = type;
-            
-            // Mock ambient sound - in real implementation, you'd play actual audio
-            const visualizer = document.getElementById('visualizer');
-            visualizer.style.display = 'flex';
-            
-            // Animate visualizer bars
-            const bars = visualizer.querySelectorAll('.bar');
-            bars.forEach(bar => {
-                bar.style.animationPlayState = 'running';
-            });
-            
-            console.log(`Playing ${type} ambient sounds`);
-        }
-
-        function stopAmbient() {
-            currentAmbient = null;
-            const visualizer = document.getElementById('visualizer');
-            
-            // Stop visualizer animation
-            const bars = visualizer.querySelectorAll('.bar');
-            bars.forEach(bar => {
-                bar.style.animationPlayState = 'paused';
-            });
-            
+        function loadHistoryForCountry() {
+            const selectedCountry = document.getElementById('countrySelect').value;
+            document.getElementById('historyEvent').innerHTML = '<div class="loading"></div> Loading historical events...';
             setTimeout(() => {
-                visualizer.style.display = 'none';
-            }, 500);
+                loadHistoryEvent(selectedCountry);
+            }, 1000);
         }
 
-        // Voice Control
-        function toggleVoice() {
-            voiceEnabled = !voiceEnabled;
-            const btn = document.getElementById('voiceBtn');
-            btn.textContent = voiceEnabled ? '🎤' : '🔇';
-            btn.title = voiceEnabled ? 'Voice Enabled' : 'Voice Disabled';
-        }
 
-        // Load historical event (mock data)
-        function loadHistoryEvent() {
-            const events = [
-                "1969: Neil Armstrong became the first person to walk on the moon during the Apollo 11 mission.",
-                "1789: The French Revolution began with the storming of the Bastille fortress in Paris.",
-                "1955: Disneyland opened its doors to the public in Anaheim, California.",
-                "1990: The World Wide Web was invented by Tim Berners-Lee at CERN.",
-                "1969: The first Woodstock festival began, featuring legendary musical performances."
-            ];
-            
-            const randomEvent = events[Math.floor(Math.random() * events.length)];
-            document.getElementById('historyEvent').textContent = randomEvent;
+        window.onclick = function(event) {
+            const modal = document.getElementById('locationModal');
+            if (event.target === modal) {
+                closeLocationModal();
+            }
         }
-
-        // Initialize the app when page loads
         window.addEventListener('load', init);
