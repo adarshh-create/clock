@@ -22,15 +22,15 @@
             transition: all 0.5s ease;
         }
 
-        .winter-night { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
-        .spring-dawn { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
-        .spring-morning { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-        .summer-morning { background: linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%); }
+        .winter-night { background: linear-gradient(135deg, #394b6c 0%, #0f2f68 100%); }
+        .spring-dawn { background: linear-gradient(135deg, #ffecd2 0%, #a26854 100%); }
+        .spring-morning { background: linear-gradient(135deg, #415e5c 0%, #803d52 100%); }
+        .summer-morning { background: linear-gradient(135deg, #fad0c4 0%, #8f678f 100%); }
         .summer-midday { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .summer-afternoon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .autumn-afternoon { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
-        .autumn-evening { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .winter-evening { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .summer-afternoon { background: linear-gradient(135deg, #5a1a61 0%, #a82335 100%); }
+        .autumn-afternoon { background: linear-gradient(135deg, #634f34 0%, #c05532 100%); }
+        .autumn-evening { background: linear-gradient(135deg, #29445b 0%, #558a8d 100%); }
+        .winter-evening { background: linear-gradient(135deg, #43e97b 0%, #4f766f 100%); }
 
         .floating-particles {
             position: fixed;
